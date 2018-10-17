@@ -257,9 +257,9 @@ int tmLQCD_read_gauge(const int nconfig) {
 }
 
 
-int tmLQCD_invert(double * const propagator, double * const source, 
-		  const int op_id, const int write_prop) {
+int tmLQCD_invert(double * const propagator, double * const source, const int op_id ) {
   unsigned int index_start = 0;
+  const int write_prop = 0;
   g_mu = 0.;
 
   if(lowmem_flag && g_proc_id==0){
@@ -370,6 +370,9 @@ int tmLQCD_get_mpi_params(tmLQCD_mpi_params * params) {
   params->proc_coords[1] = g_proc_coords[1];
   params->proc_coords[2] = g_proc_coords[2];
   params->proc_coords[3] = g_proc_coords[3];
+#ifdef TM_USE_MPI
+    MPI_Comm_dup(g_cart_grid, &(params->cart_grid) );
+#endif
 
   return(0);
 }
