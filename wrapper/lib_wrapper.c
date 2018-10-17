@@ -297,6 +297,75 @@ int tmLQCD_invert(double * const propagator, double * const source, const int op
 }
 
 
+/***************************************************************************************
+ * invert even-odd preconditioned operator directly
+ *   propagator and source must be in even-odd ordering already
+ ***************************************************************************************/
+int tmLQCD_invert_eo(double * const propagator, double * const source, const int op_id) {
+  int iter;
+  spinor * const p_ptr = (spinor * const)propagator;
+  spinor * const s_ptr = (spinor * const)source;
+
+
+  if(!tmLQCD_invert_initialised) {
+    fprintf(stderr, "[tmLQCD_invert_eo] tmLQCD_inver_init must be called first. Aborting...\n");
+    fflush(stderr);
+    return(-1);
+  }
+
+  if(op_id < 0 || op_id >= no_operators) {
+    fprintf(stderr, "[tmLQCD_invert_eo] op_id=%d not in valid range. Aborting...\n", op_id);
+    fflush(stderr);
+    return(-1);
+  }
+
+  if (operator_list[op_id].solver != EXACTDEFLATEDCG ) {
+    fprintf(stderr, "[tmLQCD_invert_eo] Error, wrong solver type in operator\n");
+    fflush(stderr);
+    return(-2);
+  }
+
+  if(g_proc_id == 0) {
+    printf("# [tmLQCD_invert_eo] Using eo-prec., symmetrized, deflated cg!\n");
+    fflush(stdout);
+  }
+
+  /****************************************
+   * - initialize parameters; this is otherwise
+   *   done in operator.c or invert.c
+   * -
+   ****************************************/
+  boundary(operator_list[op_id].kappa);
+  g_mu    = operator_list[op_id].mu;
+  g_c_sw  = operator_list[op_id].c_sw;
+  g_kappa = operator_list[op_id].kappa;
+
+  if(operator_list[op_id].type == CLOVER) {
+    if (g_cart_id == 0 && g_debug_level > 1) {
+      printf("#\n# csw = %e, computing clover leafs\n", g_c_sw);
+    }
+    init_sw_fields(VOLUME);
+
+    sw_term( (const su3**) g_gauge_field, operator_list[op_id].kappa, operator_list[op_id].c_sw);
+    /* this must be EE here!   */
+    /* to match clover_inv in Qsw_psi */
+    sw_invert(EE, operator_list[op_id].mu);
+    /* now copy double sw and sw_inv fields to 32bit versions */
+    copy_32_sw_fields();
+  }
+
+  /* call invert */
+  iter = exactdeflated_cg( operator_list[op_id].solver_params, operator_list[op_id].deflator_params, p_ptr, s_ptr);
+
+  if(iter<0) {
+    fprintf(stderr, "[tmLQCD_invert_eo] Error from deflated_cg, status was %d\n", iter);
+    fflush(stderr);
+    return(1);
+  }
+
+  return(0);
+}  /* end of tmLQCD_invert_eo */
+
 int tmLQCD_finalise() {
 
 #ifdef TM_USE_OMP
