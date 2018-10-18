@@ -306,7 +306,10 @@ int tmLQCD_invert_eo(double * const propagator, double * const source, const int
   spinor * const p_ptr = (spinor * const)propagator;
   spinor * const s_ptr = (spinor * const)source;
 
-
+  fprintf(stderr, "[tmLQCD_invert_eo] not yet implemented; aborting...\n");
+  fflush(stderr);
+  return( -1 );
+#if 0
   if(!tmLQCD_invert_initialised) {
     fprintf(stderr, "[tmLQCD_invert_eo] tmLQCD_inver_init must be called first. Aborting...\n");
     fflush(stderr);
@@ -364,6 +367,7 @@ int tmLQCD_invert_eo(double * const propagator, double * const source, const int
   }
 
   return(0);
+#endif  /* of if 0 */
 }  /* end of tmLQCD_invert_eo */
 
 int tmLQCD_finalise() {
