@@ -30,6 +30,9 @@
 #define _XCHANGE_DERI_H
 
 #include "su3adj.h"
+
+/* void addup_ddummy(su3adj** const df, const int ix, const int iy); */
+
 void xchange_deri(su3adj ** const df);
 
 #endif
