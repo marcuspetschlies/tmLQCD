@@ -61,6 +61,7 @@
 #include "linalg/convert_eo_to_lexic.h"
 #include "include/tmLQCD.h"
 #include "fatal_error.h"
+#include "smearing/stout.h"
 
 #ifdef HAVE_GPU
 extern void init_mixedsolve_eo(su3** gf);
@@ -466,3 +467,21 @@ int tmLQCD_get_gauge_field_pointer(double ** gf) {
 
   return(0);
 }
+
+/* Stout smearing */
+int tmLQCD_stout_smear_gauge_field ( const double * gf_out, const double * gf_in, const int niter , const double omega ) {
+
+  int exitstatus;
+  struct stout_parameters p;
+  p.rho = omega;
+  p.iterations = niter;
+
+  exitstatus = stout_smear ( (su3_tuple *)gf_out, &p, (su3_tuple *)gf_in );
+  if ( exitstatus != 0 ) {
+    fprintf ( stderr, "[] Error from stout_smear, status was %d %s %d\n", exitstatus, __FILE__, __LINE__ );
+    return( 1 );
+  }
+
+  return ( 0 );
+
+}  /* end of tmLQCD_stout_smear_gauge_field */

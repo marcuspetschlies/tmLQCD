@@ -75,6 +75,9 @@ extern "C"
   int invert_quda_direct(double * const propgator, double * const source, const int op_id);
 #endif
 
+/* Stout smearing */
+  int tmLQCD_stout_smear_gauge_field ( const double * gf_out, const double * gf_in, const int niter , const double omega );
+
 #ifdef __cplusplus
 }
 #endif
