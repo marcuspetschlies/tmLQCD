@@ -61,7 +61,9 @@
 #include "linalg/convert_eo_to_lexic.h"
 #include "include/tmLQCD.h"
 #include "fatal_error.h"
+#include "su3.h"
 #include "smearing/stout.h"
+#include "buffers/utils.h"
 
 #ifdef HAVE_GPU
 extern void init_mixedsolve_eo(su3** gf);
@@ -117,6 +119,7 @@ int tmLQCD_invert_init(int argc, char *argv[], const int _verbose, const int ext
   g_dbw2rand = 0;
   for(int j = 0; j < no_operators; j++) if(!operator_list[j].even_odd_flag) even_odd_flag = 0;
 
+  if ( g_cart_id == 0 ) fprintf( stdout, "# [tmLQCD_invert_init] VOLUMEPLUSRAND = %u\n", VOLUMEPLUSRAND );
 #ifdef _GAUGE_COPY
   int j = init_gauge_field(VOLUMEPLUSRAND, 1);
   j += init_gauge_field_32(VOLUMEPLUSRAND, 1);
@@ -469,16 +472,20 @@ int tmLQCD_get_gauge_field_pointer(double ** gf) {
 }
 
 /* Stout smearing */
-int tmLQCD_stout_smear_gauge_field ( const double * gf_out, const double * gf_in, const int niter , const double omega ) {
+int tmLQCD_stout_smear_gauge_field ( void* gf, const int niter , const double omega ) {
 
   int exitstatus;
   struct stout_parameters p;
   p.rho = omega;
   p.iterations = niter;
 
-  exitstatus = stout_smear ( (su3_tuple *)gf_out, &p, (su3_tuple *)gf_in );
+  su3_tuple * _gf = (su3_tuple*)gf;
+
+
+  // exitstatus = stout_smear ( _gfo, &p, _gfi );
+  exitstatus = stout_smear_inplace ( _gf, &p );
   if ( exitstatus != 0 ) {
-    fprintf ( stderr, "[] Error from stout_smear, status was %d %s %d\n", exitstatus, __FILE__, __LINE__ );
+    fprintf ( stderr, "[tmLQCD_stout_smear_gauge_field] Error from stout_smear, status was %d %s %d\n", exitstatus, __FILE__, __LINE__ );
     return( 1 );
   }
 
