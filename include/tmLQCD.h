@@ -28,6 +28,7 @@
 #define _TMLQCD_H
 
 #include "config.h"
+#include "su3.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -76,7 +77,8 @@ extern "C"
 #endif
 
 /* Stout smearing */
-  int tmLQCD_stout_smear_gauge_field ( const double * gf_out, const double * gf_in, const int niter , const double omega );
+  int tmLQCD_stout_smear_gauge_field ( void* gf, const int niter , const double omega );
+
 
 #ifdef __cplusplus
 }
