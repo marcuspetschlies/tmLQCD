@@ -24,7 +24,7 @@
 
 
 #ifdef HAVE_CONFIG_H
-# include<config.h>
+# include<tmlqcd_config.h>
 #endif
 #include <stdlib.h>
 #include <stdio.h>
@@ -38,8 +38,6 @@
 #include "su3adj.h"
 #include "xchange_deri.h"
 
-
-/* void addup_ddummy(su3adj** const df, const int ix, const int iy) */
 static inline void addup_ddummy(su3adj** const df, const int ix, const int iy) 
 {
   for(int mu = 0; mu < 4; mu++) {

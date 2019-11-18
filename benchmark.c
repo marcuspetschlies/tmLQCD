@@ -24,7 +24,7 @@
 *******************************************************************************/
 
 #ifdef HAVE_CONFIG_H
-# include<config.h>
+# include<tmlqcd_config.h>
 #endif
 #include <stdlib.h>
 #include <stdio.h>
@@ -113,6 +113,8 @@ int main(int argc,char *argv[])
 #endif
 
   g_rgi_C1 = 1.; 
+  
+  init_global_states();
 
     /* Read the input file */
   if((status = read_input("benchmark.input")) != 0) {

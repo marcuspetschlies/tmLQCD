@@ -1,5 +1,5 @@
-/***************************************************************************
- * Copyright (C) 2017                               Bartosz Kostrzewa
+/***********************************************************************
+ * Copyright (C) 2002,2003,2004,2005,2006,2007,2008 Carsten Urbach
  *
  * This file is part of tmLQCD.
  *
@@ -15,18 +15,12 @@
  * 
  * You should have received a copy of the GNU General Public License
  * along with tmLQCD.  If not, see <http://www.gnu.org/licenses/>.
- ****************************************************************************/
+ ***********************************************************************/
 
-#ifndef QUDA_SOLVER_TRANSLATE_H
-#define QUDA_SOLVER_TRANSLATE_H
+#ifndef _CONVERT_EVEN_TO_LEXIC_H
+#define _CONVERT_EVEN_TO_LEXIC_H
 
-#include "solver/solver_types.h"
-
-// these exist only in case we are compiling without QUDA support, such that the
-// input file reader can be compiled
-typedef enum QudaInverterType_s {
- QUDA_BICGSTAB_INVERTER = BICGSTAB,
- QUDA_CG_INVERTER = CG
-} QudaInverterType;
+void convert_even_to_lexic(spinor * const P, spinor * const r);
+void convert_lexic_to_even(spinor * const r, spinor * const P);
 
 #endif

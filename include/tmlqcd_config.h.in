@@ -1,4 +1,4 @@
-/* Hand-written config.h.in. */
+/* Hand-written tmlqcd_config.h.in. */
 
 #ifndef _CONFIG_H
 #define _CONFIG_H
@@ -202,6 +202,9 @@
 
 /* Using QUDA GPU */
 #undef TM_USE_QUDA
+
+/* Using experimental QUDA version */
+#undef TM_QUDA_EXPERIMENTAL
 
 /* Using DDalphaAMG */
 #undef DDalphaAMG
