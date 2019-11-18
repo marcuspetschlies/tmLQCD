@@ -125,7 +125,7 @@ int tmLQCD_invert_init(int argc, char *argv[], const int _verbose, const int ext
   j += init_gauge_field_32(VOLUMEPLUSRAND, 1);
 #else
   int j = init_gauge_field(VOLUMEPLUSRAND, 0);
-  j += init_gauge_field_32(VOLUMEPLUSRAND, 0);
+  /* j += init_gauge_field_32(VOLUMEPLUSRAND, 0); */
 #endif
   if (j != 0) {
     fprintf(stderr, "tmLQCD_init_invert: Not enough memory for gauge_fields! Aborting...\n");
