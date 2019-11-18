@@ -38,7 +38,7 @@ ZT [0-9(10)(11)]
 IDXEX ("-"{DIGIT}+)
 SIGN ("+"|"-")
 FLT {SIGN}?{DIGIT}+(".")?{DIGIT}*(e("-"|"+")?{DIGIT}+)?
-FILENAME [a-zA-Z0-9_".""-""/"][a-zA-z0-9"."_"-""/"]+
+FILENAME [a-zA-Z0-9_".""-""/"][a-zA-Za-z0-9"."_"-""/"]+
 NAME [a-zA-Z0-9_]+
 CSTR \"[a-zA-Z0-9\-\._]+\"
 TYPE [0-9A-Z]+
@@ -763,12 +763,12 @@ static inline double fltlist_next_token(int * const list_end){
     sscanf(yytext, " %[2a-zA-Z] = %lf", name, &c);
     mg_setup_mu=c;
     mg_setup_mu_set=1;
-    if(myverbose) printf("  MGSetup2KappaMu set to %f line %d operator %d\n", mg_setup_mu, line_of_file, current_operator);
+    if(myverbose) printf("  MGSetup2KappaMu set to %16.7e line %d operator %d\n", mg_setup_mu, line_of_file, current_operator);
   }
   {SPC}*MGCoarseMuFactor{EQL}{FLT}+ {
     sscanf(yytext, " %[a-zA-Z] = %lf", name, &c);
     mg_cmu_factor=c;
-    if(myverbose) printf("  MGCoarseMuFactor set to %f line %d operator %d\n", mg_cmu_factor, line_of_file, current_operator);
+    if(myverbose) printf("  MGCoarseMuFactor set to %16.7e line %d operator %d\n", mg_cmu_factor, line_of_file, current_operator);
   }
   {SPC}*MGMixedPrecision{EQL}yes {
     sscanf(yytext, " %[a-zA-Z] = %lf", name, &c);
@@ -783,12 +783,12 @@ static inline double fltlist_next_token(int * const list_end){
   {SPC}*MGdtauUpdate{EQL}{FLT}+ {
     sscanf(yytext, " %[a-zA-Z] = %lf", name, &c);
     mg_dtau_update=c;
-    if(myverbose) printf("  MGdtauUpdate set to %f line %d operator %d\n", mg_dtau_update, line_of_file, current_operator);
+    if(myverbose) printf("  MGdtauUpdate set to %16.7e line %d operator %d\n", mg_dtau_update, line_of_file, current_operator);
   }
   {SPC}*MGrhoUpdate{EQL}{FLT}+ {
     sscanf(yytext, " %[a-zA-Z] = %lf", name, &c);
     mg_rho_update=c;
-    if(myverbose) printf("  MG_rho_Update set to %f line %d operator %d\n", mg_rho_update, line_of_file, current_operator);
+    if(myverbose) printf("  MG_rho_Update set to %16.7e line %d operator %d\n", mg_rho_update, line_of_file, current_operator);
   }
   {SPC}*MGUpdateSetupIter{EQL}{DIGIT}+ {
     sscanf(yytext, " %[a-zA-Z] = %d", name, &a);
@@ -1473,7 +1473,7 @@ static inline double fltlist_next_token(int * const list_end){
   {SPC}*MGSetupSolverTolerance{EQL}{FLT}+ {
     sscanf(yytext, " %[a-zA-Z] = %lf", name, &c);
     quda_input.mg_setup_tol=c;
-    if(myverbose) printf("  MGSetupSolverTolerance set to %f line %d\n", quda_input.mg_setup_tol, line_of_file);
+    if(myverbose) printf("  MGSetupSolverTolerance set to %16.7e line %d\n", quda_input.mg_setup_tol, line_of_file);
   }
   {SPC}*MGSetupMaxSolverIterations{EQL}{DIGIT}+ {
     sscanf(yytext, " %[a-zA-Z] = %d", name, &a);
@@ -1483,7 +1483,7 @@ static inline double fltlist_next_token(int * const list_end){
   {SPC}*MGCoarseSolverTolerance{EQL}{FLT}+ {
     sscanf(yytext, " %[a-zA-Z] = %lf", name, &c);
     quda_input.mg_coarse_solver_tol=c;
-    if(myverbose) printf("  MGCoarseSolverTolerance set to %f line %d\n", quda_input.mg_coarse_solver_tol, line_of_file);
+    if(myverbose) printf("  MGCoarseSolverTolerance set to %16.7e line %d\n", quda_input.mg_coarse_solver_tol, line_of_file);
   }
   {SPC}*MGCoarseMaxSolverIterations{EQL}{DIGIT}+ {
     sscanf(yytext, " %[a-zA-Z] = %d", name, &a);
@@ -1493,7 +1493,7 @@ static inline double fltlist_next_token(int * const list_end){
   {SPC}*MGSmootherTolerance{EQL}{FLT}+ {
     sscanf(yytext, " %[a-zA-Z] = %lf", name, &c);
     quda_input.mg_smoother_tol=c;
-    if(myverbose) printf("  MGSmootherTolerance set to %f line %d\n", quda_input.mg_smoother_tol, line_of_file);
+    if(myverbose) printf("  MGSmootherTolerance set to %16.7e line %d\n", quda_input.mg_smoother_tol, line_of_file);
   }
   {SPC}*MGSmootherPreIterations{EQL}{DIGIT}+ {
     sscanf(yytext, " %[a-zA-Z] = %d", name, &a);
@@ -1508,7 +1508,7 @@ static inline double fltlist_next_token(int * const list_end){
   {SPC}*MGOverUnderRelaxationFactor{EQL}{FLT}+ {
     sscanf(yytext, " %[a-zA-Z] = %lf", name, &c);
     quda_input.mg_omega=c;
-    if(myverbose) printf("  MGOverUnderRelaxationFactor set to %f line %d\n", quda_input.mg_omega, line_of_file);
+    if(myverbose) printf("  MGOverUnderRelaxationFactor set to %16.7e line %d\n", quda_input.mg_omega, line_of_file);
   }
   {SPC}*MGRunVerify{EQL}yes {
     quda_input.mg_run_verify = QUDA_BOOLEAN_YES;
@@ -1529,7 +1529,7 @@ static inline double fltlist_next_token(int * const list_end){
   {SPC}*MGResetSetupThreshold{EQL}{FLT}+ {
     sscanf(yytext, " %[a-zA-Z] = %lf", name, &c);
     quda_input.mg_reset_setup_threshold=c;
-    if(myverbose) printf("  MGResetSetupThreshold set to %f line %d\n", quda_input.mg_reset_setup_threshold, line_of_file);
+    if(myverbose) printf("  MGResetSetupThreshold set to %16.7e line %d\n", quda_input.mg_reset_setup_threshold, line_of_file);
   }
   ^EndExternalInverter{SPC}*  { 
     if(myverbose) printf("QUDA external inverter parameters parsed on line %d\n\n", line_of_file);
