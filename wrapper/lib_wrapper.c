@@ -320,20 +320,6 @@ int tmLQCD_invert(double * const propagator, double * const source, const int op
   return (0);
 }
 
-int tmLQCD_invert_eo(double* const Odd_out, double* const Odd_in, const int op_id){
-  unsigned int index_start = 0;
-  if (!tmLQCD_invert_initialised) {
-    fprintf(stderr, "tmLQCD_invert_eo: tmLQCD_inver_init must be called first. Aborting...\n");
-    return (-1);
-  }
-  if (op_id < 0 || op_id >= no_operators) {
-    fprintf(stderr, "tmLQCD_invert_eo: op_id=%d not in valid range. Aborting...\n", op_id);
-    return (-2);
-  }
-
-  // here we need to provide a way to call the selected solver directly on the
-  // e/o precon prepared problem
-
 /***************************************************************************************
  * invert even-odd preconditioned operator directly
  *   propagator and source must be in even-odd ordering already
@@ -478,19 +464,11 @@ int tmLQCD_get_mpi_params(tmLQCD_mpi_params* params) {
   params->proc_coords[1] = g_proc_coords[1];
   params->proc_coords[2] = g_proc_coords[2];
   params->proc_coords[3] = g_proc_coords[3];
-<<<<<<< HEAD
 #ifdef TM_USE_MPI
     MPI_Comm_dup(g_cart_grid, &(params->cart_grid) );
-#endif
-
-=======
-  // g_cart_grid only exists when MPI is in use
-#ifdef TM_USE_MPI
-  params->cart_grid = g_cart_grid;
 #else
   params->cart_grid = -1;
 #endif
->>>>>>> etmc/quda_work
   return(0);
 }
 
@@ -614,7 +592,7 @@ int tmLQCD_invert_qphix_direct(double * const Odd_out, double * const Odd_in, co
   op_backup_restore_globals(TM_RESTORE_GLOBALS);
   return(niter);
 }
-<<<<<<< HEAD
+#endif
 
 /* Stout smearing */
 int tmLQCD_stout_smear_gauge_field ( const double * gf_out, const double * gf_in, const int niter , const double omega ) {
@@ -633,6 +611,3 @@ int tmLQCD_stout_smear_gauge_field ( const double * gf_out, const double * gf_in
   return ( 0 );
 
 }  /* end of tmLQCD_stout_smear_gauge_field */
-=======
-#endif
->>>>>>> etmc/quda_work
