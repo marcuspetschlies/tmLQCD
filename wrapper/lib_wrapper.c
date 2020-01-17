@@ -471,7 +471,7 @@ int tmLQCD_get_gauge_field_pointer(double ** gf) {
   return(0);
 }
 
-/* Stout smearing */
+/* 4-d Stout smearing */
 int tmLQCD_stout_smear_gauge_field ( void* gf, const int niter , const double omega ) {
 
   int exitstatus;
@@ -484,6 +484,26 @@ int tmLQCD_stout_smear_gauge_field ( void* gf, const int niter , const double om
 
   // exitstatus = stout_smear ( _gfo, &p, _gfi );
   exitstatus = stout_smear_inplace ( _gf, &p );
+  if ( exitstatus != 0 ) {
+    fprintf ( stderr, "[tmLQCD_stout_smear_gauge_field] Error from stout_smear, status was %d %s %d\n", exitstatus, __FILE__, __LINE__ );
+    return( 1 );
+  }
+
+  return ( 0 );
+
+}  /* end of tmLQCD_stout_smear_gauge_field */
+
+/* 3-d Stout smearing */
+int tmLQCD_stout_smear_3d_gauge_field ( void* gf, const int niter , const double omega ) {
+
+  int exitstatus;
+  struct stout_parameters p;
+  p.rho = omega;
+  p.iterations = niter;
+
+  su3_tuple * _gf = (su3_tuple*)gf;
+
+  exitstatus = stout_smear_3d_inplace ( _gf, &p );
   if ( exitstatus != 0 ) {
     fprintf ( stderr, "[tmLQCD_stout_smear_gauge_field] Error from stout_smear, status was %d %s %d\n", exitstatus, __FILE__, __LINE__ );
     return( 1 );
