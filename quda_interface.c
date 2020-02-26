@@ -176,6 +176,9 @@ void _setOneFlavourSolverParam(const double kappa, const double c_sw, const doub
                                const int solver_type, const int even_odd,
                                const double eps_sq, const int maxiter);
 
+/**********************************************************************/
+/**********************************************************************/
+
 void _setDefaultQudaParam(void){
   reset_quda_gauge_state(&quda_gauge_state);
   reset_quda_clover_state(&quda_clover_state);
@@ -295,6 +298,9 @@ void _setDefaultQudaParam(void){
   setVerbosityQuda( QUDA_SUMMARIZE, "# QUDA: ", stdout);
 }
 
+/**********************************************************************/
+/**********************************************************************/
+
 void _initQuda() {
   if( quda_initialized )
     return;
@@ -359,6 +365,9 @@ void _initQuda() {
   quda_initialized = 1;
 }
 
+/**********************************************************************/
+/**********************************************************************/
+
 // finalize the QUDA library
 void _endQuda() {
   if( quda_initialized ) {
@@ -373,6 +382,9 @@ void _endQuda() {
   }
 }
 
+/**********************************************************************/
+/**********************************************************************/
+
 void _loadCloverQuda(QudaInvertParam* inv_param){
   // check if loaded clover and gauge fields agree
   if( check_quda_clover_state(&quda_clover_state, &quda_gauge_state) ){
@@ -386,6 +398,9 @@ void _loadCloverQuda(QudaInvertParam* inv_param){
     if(g_proc_id==0 && g_debug_level > 0 ) printf("# QUDA: Time for loadCloverQuda: %.4e\n",gettime()-atime);
   }
 }
+
+/**********************************************************************/
+/**********************************************************************/
 
 void _loadGaugeQuda( const int compression ) {
   // check if the currently loaded gauge field is also the current gauge field
@@ -489,6 +504,9 @@ void _loadGaugeQuda( const int compression ) {
   set_quda_gauge_state(&quda_gauge_state, nstore, X1, X2, X3, X0);
 }
 
+/**********************************************************************/
+/**********************************************************************/
+
 // reorder spinor to QUDA format
 void reorder_spinor_toQuda( double* sp, QudaPrecision precision, int doublet, double* sp2 ) {
   double startTime = gettime();
@@ -532,7 +550,10 @@ void reorder_spinor_toQuda( double* sp, QudaPrecision precision, int doublet, do
   double diffTime = endTime - startTime;
   if(g_proc_id == 0)
     printf("# QUDA: time spent in reorder_spinor_toQuda: %f secs\n", diffTime);
-}
+}  /* end of reorder_spinor_toQuda */
+
+/**********************************************************************/
+/**********************************************************************/
 
 // reorder spinor from QUDA format
 void reorder_spinor_fromQuda( double* sp, QudaPrecision precision, int doublet, double* sp2 ) {
@@ -574,7 +595,11 @@ void reorder_spinor_fromQuda( double* sp, QudaPrecision precision, int doublet, 
   double endTime = gettime();
   double diffTime = endTime - startTime;
   tm_debug_printf(0,0,"# QUDA: time spent in reorder_spinor_fromQuda: %f secs\n", diffTime);
-}
+
+}  /* end of reorder_spinor_fromQuda */
+
+/**********************************************************************/
+/**********************************************************************/
 
 void set_boundary_conditions( CompressionType* compression ) {
   // we can't have compression and theta-BC, but we will support compression
@@ -636,6 +661,9 @@ void set_boundary_conditions( CompressionType* compression ) {
   gauge_param.reconstruct_precondition = link_recon_sloppy;
 }
 
+/**********************************************************************/
+/**********************************************************************/
+
 void set_sloppy_prec( const SloppyPrecision sloppy_precision ) {
 
   // choose sloppy prec.
@@ -658,7 +686,10 @@ void set_sloppy_prec( const SloppyPrecision sloppy_precision ) {
   inv_param.cuda_prec_sloppy = cuda_prec_sloppy;
   inv_param.clover_cuda_prec_sloppy = cuda_prec_sloppy;
   inv_param.clover_cuda_prec_refinement_sloppy = cuda_prec_sloppy;
-}
+}  /* end of set_sloppy_prec */
+
+/**********************************************************************/
+/**********************************************************************/
 
 
 
@@ -739,7 +770,10 @@ int invert_quda_direct(double * const propagator, double const * const source,
     return(-1);
 
   return(optr->iterations);
-}
+}  /* end of invert_quda_direct */
+
+/**********************************************************************/
+/**********************************************************************/
 
 int invert_eo_quda(spinor * const Even_new, spinor * const Odd_new,
                    spinor * const Even, spinor * const Odd,
@@ -816,7 +850,10 @@ int invert_eo_quda(spinor * const Even_new, spinor * const Odd_new,
     return(-1);
 
   return(iteration);
-}
+}  /* end of invert_eo_quda */
+
+/**********************************************************************/
+/**********************************************************************/
 
 int invert_doublet_eo_quda(spinor * const Even_new_s, spinor * const Odd_new_s,
                            spinor * const Even_new_c, spinor * const Odd_new_c,
@@ -942,7 +979,10 @@ int invert_doublet_eo_quda(spinor * const Even_new_s, spinor * const Odd_new_s,
     return(-1);
 
   return(iteration);
-}
+}  /* end of invert_doublet_eo_quda */
+
+/**********************************************************************/
+/**********************************************************************/
 
 // if even_odd_flag set
 void M_full_quda(spinor * const Even_new, spinor * const Odd_new,  spinor * const Even, spinor * const Odd) {
@@ -969,7 +1009,7 @@ void M_full_quda(spinor * const Even_new, spinor * const Odd_new,  spinor * cons
   // reorder spinor
   reorder_spinor_fromQuda( (double*)spinorOut, inv_param.cpu_prec, 0, NULL );
   convert_lexic_to_eo( Even_new, Odd_new, spinorOut );
-}
+}  /* end of M_full_quda */
 
 // no even-odd
 void D_psi_quda(spinor * const P, spinor * const Q) {
@@ -995,7 +1035,10 @@ void D_psi_quda(spinor * const P, spinor * const Q) {
   // reorder spinor
   reorder_spinor_fromQuda( (double*)spinorIn,  inv_param.cpu_prec, 0, NULL );
   reorder_spinor_fromQuda( (double*)spinorOut, inv_param.cpu_prec, 0, NULL );
-}
+}  /* end of D_psi_quda */
+
+/**********************************************************************/
+/**********************************************************************/
 
 void _setOneFlavourSolverParam(const double kappa, const double c_sw, const double mu, 
                                const int solver_type, const int even_odd,
@@ -1157,7 +1200,10 @@ void _setOneFlavourSolverParam(const double kappa, const double c_sw, const doub
     printQudaMultigridParam(&quda_mg_param);
     printf("----------------------------------------\n");
   }
-}
+}  /* end of _setOneFlavourSolverParam */
+
+/**********************************************************************/
+/**********************************************************************/
 
 
 
@@ -1415,5 +1461,45 @@ void _setQudaMultigridParam(QudaMultigridParam* mg_param) {
     mg_inv_param->verbosity = QUDA_VERBOSE;
   }
   mg_inv_param->verbosity_precondition = QUDA_SUMMARIZE;;
-}
+}  /* end of _setQudaMultigridParam */
 
+/**********************************************************************/
+/**********************************************************************/
+
+/**********************************************************************
+ * simplest version, assuming global gauge field has already been set
+ *
+ * CAN THIS INTERFERE WITH LOADED INVERTER GAUGE FIELD ?
+ * DON'T WANT TO REBUILD CLOVER; MG SETUP after each smearing
+ * ( also Wuppertal smearing below )
+ *
+ * HOW MUCH MORE MEMORY DOES IT NEED ?
+ **********************************************************************/
+void _performAPEnStep ( unsigned int nSteps, double alpha)
+{
+
+  /* quda lib interface function for APE smearing */
+  performAPEnStep( nSteps, alpha);
+
+}  /* end of _performAPEnStep */
+
+/**********************************************************************/
+/**********************************************************************/
+
+/**********************************************************************
+ * again simplest version, assumes gauge fields are in place 
+ *   in partulcar gaugeSmeared, if that is to be used;
+ *   should be preceeded by call to _performAPEnStep so that
+ *   quda interface creates gaugeSmeared
+ *
+ * CHECK AGAIN FOR INTERFERENCE
+ **********************************************************************/
+void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha ) {
+
+  reorder_spinor_toQuda ( h_in, inv_param.cpu_prec, 0, NULL );
+
+  performWuppertalnStep( (void *)h_out, (void*)h_in, &inv_param, nSteps, alpha );
+
+  reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL );
+
+}  /* end of _performWuppertalnStep */

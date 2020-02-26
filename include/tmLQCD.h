@@ -33,6 +33,7 @@
 #ifdef TM_USE_MPI
 #include <mpi.h>
 #endif
+#include "su3.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -96,9 +97,12 @@ int tmLQCD_read_gauge(const int nconfig);
 
   int tmLQCD_finalise();
 
-  int tmLQCD_get_gauge_field_pointer(double **gf);
-  int tmLQCD_get_mpi_params(tmLQCD_mpi_params *params);
-  int tmLQCD_get_lat_params(tmLQCD_lat_params *params);
+  int tmLQCD_get_gauge_field_pointer(double ** gf);
+
+  void * tmLQCD_assign_gauge_field_pointer ( void );
+
+  int tmLQCD_get_mpi_params(tmLQCD_mpi_params * params);
+  int tmLQCD_get_lat_params(tmLQCD_lat_params * params);
 
   int tmLQCD_set_op_params(tmLQCD_op_params const *const params, const int op_id);
   int tmLQCD_get_op_params(tmLQCD_op_params *params, const int op_id);
@@ -121,8 +125,12 @@ int tmLQCD_read_gauge(const int nconfig);
 int tmLQCD_invert_qphix_direct(double *const Odd_out, double *const Odd_in, const int op_id);
 #endif
 
-/* Stout smearing */
-  int tmLQCD_stout_smear_gauge_field ( const double * gf_out, const double * gf_in, const int niter , const double omega );
+  /* 4-d Stout smearing */
+  int tmLQCD_stout_smear_gauge_field ( void* gf, const int niter , const double omega );
+
+  /* 3-d Stout smearing */
+  int tmLQCD_stout_smear_3d_gauge_field ( void* gf, const int niter , const double omega );
+
 
 #ifdef __cplusplus
 }

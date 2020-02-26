@@ -137,4 +137,8 @@ int invert_doublet_eo_quda(spinor * const Even_new_s, spinor * const Odd_new_s,
 void M_full_quda(spinor * const Even_new, spinor * const Odd_new,  spinor * const Even, spinor * const Odd);
 void D_psi_quda(spinor * const P, spinor * const Q);
 
+/* interface smearing functions */
+void _performAPEnStep ( unsigned int nSteps, double alpha);
+void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha );
+
 #endif /* QUDA_INTERFACE_H_ */

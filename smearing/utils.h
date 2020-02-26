@@ -35,6 +35,8 @@ void generic_staples(gauge_field_t buff_out, int x, int mu, gauge_field_t buff_i
 #endif
 void generic_staples(su3 *buff_out, int x, int mu, su3_tuple *buff_in);
 
+void generic_staples_3d ( su3 *buff_out, int x, int mu, su3_tuple *buff_in);
+
 
 void generic_exchange(void *field_in, int bytes_per_site);
 void project_antiherm(su3 *omega);
