@@ -469,7 +469,26 @@ int tmLQCD_get_gauge_field_pointer(double ** gf) {
   *gf = (double*) g_gauge_field[0];
 
   return(0);
-}
+}  /* end of tmLQCD_get_gauge_field_pointer */
+
+
+void * tmLQCD_assign_gauge_field_pointer ()   
+{
+  if(!tmLQCD_invert_initialised) {
+    fprintf(stderr, "tmLQCD_get_gauge_field_pointer: tmLQCD_invert_init must be called first. Aborting...\n");
+    return(-1);
+  }
+#ifdef TM_USE_MPI
+  xchange_gauge(g_gauge_field);
+#endif
+  if(!lowmem_flag){
+    convert_32_gauge_field(g_gauge_field_32, g_gauge_field, VOLUMEPLUSRAND);
+  }
+
+  return( (void*) g_gauge_field );
+
+}  /* tmLQCD_assign_gauge_field_pointer */
+
 
 /* 4-d Stout smearing */
 int tmLQCD_stout_smear_gauge_field ( void* gf, const int niter , const double omega ) {

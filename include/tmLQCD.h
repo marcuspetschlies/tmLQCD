@@ -62,6 +62,9 @@ extern "C"
   int tmLQCD_finalise();
 
   int tmLQCD_get_gauge_field_pointer(double ** gf);
+
+  void * tmLQCD_assign_gauge_field_pointer ( void );
+
   int tmLQCD_get_mpi_params(tmLQCD_mpi_params * params);
   int tmLQCD_get_lat_params(tmLQCD_lat_params * params);
 
