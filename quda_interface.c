@@ -500,6 +500,10 @@ void _loadGaugeQuda( const int compression ) {
   } // OpenMP parallel closing brace 
 #endif
 
+  if ( g_cart_id == 0 ) fprintf ( stdout, "# [_loadGaugeQuda] gauge_param.gauge_order = %d / %d\n",
+      gauge_param.gauge_order, QUDA_QDP_GAUGE_ORDER );
+
+
   loadGaugeQuda((void*)gauge_quda, &gauge_param);
   set_quda_gauge_state(&quda_gauge_state, nstore, X1, X2, X3, X0);
 }
@@ -1480,6 +1484,8 @@ void _performAPEnStep ( unsigned int nSteps, double alpha)
 
   /* quda lib interface function for APE smearing */
   performAPEnStep( nSteps, alpha);
+  /* latest develop branch commit needs */
+  /* performAPEnStep( nSteps, alpha, 1); */
 
 }  /* end of _performAPEnStep */
 
@@ -1493,13 +1499,27 @@ void _performAPEnStep ( unsigned int nSteps, double alpha)
  *   quda interface creates gaugeSmeared
  *
  * CHECK AGAIN FOR INTERFERENCE
+ *
+ * in place should be allowed
  **********************************************************************/
 void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha ) {
 
+#if 0
   reorder_spinor_toQuda ( h_in, inv_param.cpu_prec, 0, NULL );
 
   performWuppertalnStep( (void *)h_out, (void*)h_in, &inv_param, nSteps, alpha );
 
   reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL );
+#endif
 
+  if ( h_out != h_in ) {
+    memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
+  }
+  reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0, NULL );
+
+  memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
+
+  performWuppertalnStep( (void *)h_out, (void*)tempSpinor, &inv_param, nSteps, alpha );
+
+  reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL );
 }  /* end of _performWuppertalnStep */

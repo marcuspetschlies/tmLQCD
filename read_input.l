@@ -3530,7 +3530,7 @@ int yywrap()
  * read_input returns 2 if the input file did not exist 
  */
 
-int read_input(char * conf_file){
+int read_input( const char * conf_file){
 
   /********************************************
    * Setting default values!
@@ -3782,7 +3782,7 @@ int read_input(char * conf_file){
  * reread_input returns 2 if the input file did not exist 
  */
 
-int reread_input(char * conf_file){
+int reread_input( const char * conf_file){
 #ifndef FIXEDVOLUME
   int tt=T, ll=L, lx = LX, ly = LY, lz = LZ, 
       np=N_PROC_X, npy = N_PROC_Y;

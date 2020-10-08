@@ -119,6 +119,11 @@ int tmLQCD_read_gauge(const int nconfig);
 // source and propagator  Should be full VOLUME spinor fields 
 // op_id                  Index of the operator to be inverted (0 to N-1)
   int invert_quda_direct(double * const propgator, double const * const source, const int op_id);
+
+  /* interface smearing functions */
+  void _performAPEnStep ( unsigned int nSteps, double alpha);
+  void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha );
+
 #endif
 
 #ifdef TM_USE_QPHIX

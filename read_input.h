@@ -143,8 +143,8 @@ extern "C"
 
   extern tm_mpi_thread_level_t g_mpi_thread_level;
 
-  int read_input(char *);
-  int reread_input(char *);
+  int read_input( const char *);
+  int reread_input( const char *);
   
 #ifdef __cplusplus
 }

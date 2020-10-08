@@ -328,14 +328,15 @@ int tmLQCD_invert(double * const propagator, double * const source, const int op
  *   propagator and source must be in even-odd ordering already
  ***************************************************************************************/
 int tmLQCD_invert_eo(double * const propagator, double * const source, const int op_id) {
-  int iter;
-  spinor * const p_ptr = (spinor * const)propagator;
-  spinor * const s_ptr = (spinor * const)source;
 
   fprintf(stderr, "[tmLQCD_invert_eo] not yet implemented; aborting...\n");
   fflush(stderr);
   return( -1 );
 #if 0
+  int iter;
+  spinor * const p_ptr = (spinor * const)propagator;
+  spinor * const s_ptr = (spinor * const)source;
+
   if(!tmLQCD_invert_initialised) {
     fprintf(stderr, "[tmLQCD_invert_eo] tmLQCD_inver_init must be called first. Aborting...\n");
     fflush(stderr);
@@ -602,7 +603,7 @@ void * tmLQCD_assign_gauge_field_pointer ()
 {
   if(!tmLQCD_invert_initialised) {
     fprintf(stderr, "tmLQCD_get_gauge_field_pointer: tmLQCD_invert_init must be called first. Aborting...\n");
-    return(-1);
+    return( NULL );
   }
 #ifdef TM_USE_MPI
   xchange_gauge(g_gauge_field);
