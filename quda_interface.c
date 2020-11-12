@@ -1412,9 +1412,15 @@ void _setQudaMultigridParam(QudaMultigridParam* mg_param) {
         fatal_error("Eigensolver parameter error.\n", "_setQudaMultigridParam");
       }
 
-      mg_eig_param[level].nEv = quda_input.mg_eig_nEv[level];
-      mg_eig_param[level].nKr = quda_input.mg_eig_nKr[level];
-      mg_eig_param[level].nConv = quda_input.mg_n_vec[level];
+      // mg_eig_param[level].nEv = quda_input.mg_eig_nEv[level];
+      mg_eig_param[level].n_ev = quda_input.mg_eig_nEv[level];
+
+      // mg_eig_param[level].nKr = quda_input.mg_eig_nKr[level];
+      mg_eig_param[level].n_kr = quda_input.mg_eig_nKr[level];
+
+      // mg_eig_param[level].nConv = quda_input.mg_n_vec[level];
+      mg_eig_param[level].n_conv = quda_input.mg_n_vec[level];
+
       mg_eig_param[level].require_convergence = quda_input.mg_eig_require_convergence[level];
 
       mg_eig_param[level].tol = quda_input.mg_eig_tol[level];
@@ -1457,8 +1463,8 @@ void _setQudaMultigridParam(QudaMultigridParam* mg_param) {
   mg_param->run_verify = quda_input.mg_run_verify;
 
   // set file i/o parameters
-  strcpy(mg_param->vec_infile, "");
-  strcpy(mg_param->vec_outfile, "");
+  strcpy ( (char *__restrict)mg_param->vec_infile, "");
+  strcpy ( (char *__restrict)mg_param->vec_outfile, "");
 
   mg_inv_param->verbosity = QUDA_SUMMARIZE;
   if( g_debug_level >= 3 ){
@@ -1483,7 +1489,7 @@ void _performAPEnStep ( unsigned int nSteps, double alpha)
 {
 
   /* quda lib interface function for APE smearing */
-  performAPEnStep( nSteps, alpha);
+  performAPEnStep( nSteps, alpha, nSteps+1 );
   /* latest develop branch commit needs */
   /* performAPEnStep( nSteps, alpha, 1); */
 
