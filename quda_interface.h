@@ -173,4 +173,10 @@ int invert_eo_quda_twoflavour_mshift(spinor ** const out_up, spinor ** const out
 
 void compute_gauge_derivative_quda(monomial * const mnl, hamiltonian_field_t * const hf);
 
+#ifdef TM_USE_QUDA
+/* interface smearing functions */
+void _performAPEnStep ( unsigned int nSteps, double alpha);
+
+void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha );
+#endif
 #endif /* QUDA_INTERFACE_H_ */

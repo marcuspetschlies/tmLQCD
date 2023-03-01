@@ -2456,3 +2456,74 @@ void compute_gauge_derivative_quda(monomial * const mnl, hamiltonian_field_t * c
   tm_stopwatch_pop(&g_timers, 0, 1, "TM_QUDA");
 }
 
+#ifdef TM_USE_QUDA
+
+/**********************************************************************/
+/**********************************************************************/
+
+/**********************************************************************
+ * simplest version, assuming global gauge field has already been set
+ *
+ * CAN THIS INTERFERE WITH LOADED INVERTER GAUGE FIELD ?
+ * DON'T WANT TO REBUILD CLOVER; MG SETUP after each smearing
+ * ( also Wuppertal smearing below )
+ *
+ * HOW MUCH MORE MEMORY DOES IT NEED ?
+ **********************************************************************/
+void _performAPEnStep ( unsigned int nSteps, double alpha)
+{
+  
+  /* quda lib interface function for APE smearing */
+  /* performAPEnStep( nSteps, alpha); */
+  /* latest develop branch commit needs */
+
+  /* BEGIN COMPILE TEST; need to take this out,
+   * does not exist in QUDA verion, which is to be linked */
+
+  fprintf(stderr, "[_performAPEnStep] Warning, no call to QUDA !\n");
+  /* performAPEnStep( nSteps, alpha, 1); */
+
+  /* END OF COMPILE TEST */
+ 
+}  /* end of _performAPEnStep */
+
+
+/**********************************************************************/
+/**********************************************************************/
+
+/**********************************************************************
+ * again simplest version, assumes gauge fields are in place 
+ *   in partulcar gaugeSmeared, if that is to be used;
+ *   should be preceeded by call to _performAPEnStep so that
+ *   quda interface creates gaugeSmeared
+ *
+ * CHECK AGAIN FOR INTERFERENCE
+ *
+ * in place should be allowed
+ **********************************************************************/
+void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha ) 
+{
+#if 0
+  reorder_spinor_toQuda ( h_in, inv_param.cpu_prec, 0, NULL );
+  
+  performWuppertalnStep( (void *)h_out, (void*)h_in, &inv_param, nSteps, alpha );
+ 
+  reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL );
+#endif
+
+  if ( h_out != h_in ) {
+    memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
+  }
+  /* reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
+  reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0 ); 
+
+  memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
+
+  performWuppertalnStep( (void *)h_out, (void*)tempSpinor, &inv_param, nSteps, alpha );
+
+  /* reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
+  reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
+ 
+}  /* end of _performWuppertalnStep */
+
+#endif
