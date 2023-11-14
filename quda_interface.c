@@ -2094,6 +2094,95 @@ void _setQudaMultigridParam(QudaMultigridParam* mg_param) {
   strcpy(mg_param->vec_outfile, "");
 }
 
+/**********************************************************************/
+/**********************************************************************/
+#if 0
+/**********************************************************************
+ * simplest version, assuming global gauge field has already been set
+ *
+ * CAN THIS INTERFERE WITH LOADED INVERTER GAUGE FIELD ?
+ * DON'T WANT TO REBUILD CLOVER; MG SETUP after each smearing
+ * ( also Wuppertal smearing below )
+ *
+ * HOW MUCH MORE MEMORY DOES IT NEED ?
+ **********************************************************************/
+void _performAPEnStep ( unsigned int nSteps, double alpha)
+{
+
+  /* quda lib interface function for APE smearing */
+  performAPEnStep( nSteps, alpha, nSteps+1 );
+  /* latest develop branch commit needs */
+  /* performAPEnStep( nSteps, alpha, 1); */
+
+}  /* end of _performAPEnStep */
+#endif
+/**********************************************************************/
+/**********************************************************************/
+
+/**********************************************************************
+ * again simplest version, assumes gauge fields are in place 
+ *   in partulcar gaugeSmeared, if that is to be used;
+ *   should be preceeded by call to _performAPEnStep so that
+ *   quda interface creates gaugeSmeared
+ *
+ * CHECK AGAIN FOR INTERFERENCE
+ *
+ * in place should be allowed
+ **********************************************************************/
+void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha ) {
+
+#if 0
+  reorder_spinor_toQuda ( h_in, inv_param.cpu_prec, 0, NULL );
+
+  performWuppertalnStep( (void *)h_out, (void*)h_in, &inv_param, nSteps, alpha );
+
+  reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL );
+#endif
+
+  if ( h_out != h_in ) {
+    memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
+  }
+  reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0 );
+
+  memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
+
+  performWuppertalnStep( (void *)h_out, (void*)tempSpinor, &inv_param, nSteps, alpha );
+
+  reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
+}  /* end of _performWuppertalnStep */
+
+/**********************************************************************/
+/**********************************************************************/
+
+
+/**********************************************************************
+ *
+ **********************************************************************/
+void _performGFlownStep ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const init ) {
+
+  if ( h_out != h_in ) {
+    memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
+  }
+  /* reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
+  reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0);
+
+  memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
+
+  performGFlownStep( (void *)h_out, (void*)tempSpinor, &inv_param, smear_param, init );
+
+  /* reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
+  reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
+
+#if 0
+  /* reorder the flowed gauge field to cvc layout */
+  reorder_gauge_fromQuda ( gauge_flowed, gauge_quda );
+#endif
+
+}  /* end of _performGFlownStep */
+
+/**********************************************************************/
+/**********************************************************************/
+
 int invert_eo_degenerate_quda(spinor * const out,
                               spinor * const in,
                               const double precision, const int max_iter,
