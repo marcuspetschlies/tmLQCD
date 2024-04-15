@@ -2480,8 +2480,8 @@ void _performAPEnStep ( unsigned int nSteps, double alpha)
   /* BEGIN COMPILE TEST; need to take this out,
    * does not exist in QUDA verion, which is to be linked */
 
-  fprintf(stderr, "[_performAPEnStep] Warning, no call to QUDA !\n");
-  /* performAPEnStep( nSteps, alpha, 1); */
+  /* fprintf(stderr, "[_performAPEnStep] Warning, no call to QUDA !\n"); */
+  performAPEnStep( nSteps, alpha, 1);
 
   /* END OF COMPILE TEST */
  
@@ -2525,5 +2525,92 @@ void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigne
   reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
  
 }  /* end of _performWuppertalnStep */
+
+/**********************************************************************/
+/**********************************************************************/
+
+/**********************************************************************
+ *
+ **********************************************************************/
+
+void reorder_gauge_fromQuda( double * const gout, double ** const gin ) 
+{
+#ifdef TM_USE_OMP
+#pragma omp parallel
+{
+#endif
+  size_t gSize = (gauge_param.cpu_prec == QUDA_DOUBLE_PRECISION) ? sizeof(double) : sizeof(float);
+  
+  // now copy and reorder
+#ifdef TM_USE_OMP
+  #pragma omp for collapse(4)
+#endif
+  for( int x0=0; x0<T; x0++ )
+  {
+    for( int x1=0; x1<LX; x1++ )
+    {
+      for( int x2=0; x2<LY; x2++ )
+      {
+        for( int x3=0; x3<LZ; x3++ ) 
+        {
+#if USE_LZ_LY_LX_T
+          int j = x3 + LZ*x2 + LY*LZ*x1 + LX*LY*LZ*x0;
+          int tm_idx = x1 + LX*x2 + LY*LX*x3 + LZ*LY*LX*x0;
+#else
+          int j = x1 + LX*x2 + LY*LX*x3 + LZ*LY*LX*x0;
+          int tm_idx = x3 + LZ*x2 + LY*LZ*x1 + LX*LY*LZ*x0;
+#endif
+          int oddBit = (x0+x1+x2+x3) & 1;
+          int quda_idx = 18*(oddBit*VOLUME/2+j/2);
+
+#if USE_LZ_LY_LX_T
+          memcpy( &(gout[18*(4*tm_idx+3)]), &(gin[0][quda_idx]), 18*gSize);
+          memcpy( &(gout[18*(4*tm_idx+2)]), &(gin[1][quda_idx]), 18*gSize);
+          memcpy( &(gout[18*(4*tm_idx+1)]), &(gin[2][quda_idx]), 18*gSize);
+          memcpy( &(gout[18*(4*tm_idx+0)]), &(gin[3][quda_idx]), 18*gSize);
+#else
+          memcpy( &(gout[18*(4*tm_idx+1)]), &(gin[0][quda_idx]), 18*gSize);
+          memcpy( &(gout[18*(4*tm_idx+2)]), &(gin[1][quda_idx]), 18*gSize);
+          memcpy( &(gout[18*(4*tm_idx+3)]), &(gin[2][quda_idx]), 18*gSize);
+          memcpy( &(gout[18*(4*tm_idx+0)]), &(gin[3][quda_idx]), 18*gSize);
+#endif
+        }  /* end of loop on z */
+      }  /* end of loop on y */
+    }   /* end of loop on x */
+  }  /* end of loop on t */
+#ifdef TM_USE_OMP
+} // OpenMP parallel closing brace 
+#endif
+}  /* reorder_gauge_fromQuda */
+
+/**********************************************************************/
+/**********************************************************************/
+
+
+/**********************************************************************
+ *
+ **********************************************************************/
+void _performGFlownStep ( double * const h_out, double * const h_in, unsigned int n_steps, double step_size, int meas_interval, QudaWFlowType wflow_type, int const init ) {
+
+  if ( h_out != h_in ) {
+    memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
+  }
+  /* reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
+  reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0);
+
+  memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
+
+  performGFlownStep( (void *)h_out, (void*)tempSpinor, &inv_param, n_steps, step_size, meas_interval, wflow_type, init );
+
+  /* reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
+  reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
+ 
+#if 0
+  /* reorder the flowed gauge field to cvc layout */
+  reorder_gauge_fromQuda ( gauge_flowed, gauge_quda );
+#endif
+
+}  /* end of _performGFlownStep */
+
 
 #endif

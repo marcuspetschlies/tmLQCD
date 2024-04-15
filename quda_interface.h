@@ -178,5 +178,11 @@ void compute_gauge_derivative_quda(monomial * const mnl, hamiltonian_field_t * c
 void _performAPEnStep ( unsigned int nSteps, double alpha);
 
 void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha );
+
+
+/* interface for gradient flow functions */
+void _performGFlownStep ( double * const h_out, double * const h_in, unsigned int n_steps, double step_size, int meas_interval, QudaWFlowType wflow_type, int const init );
+
+
 #endif
 #endif /* QUDA_INTERFACE_H_ */
