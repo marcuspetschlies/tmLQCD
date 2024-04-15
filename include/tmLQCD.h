@@ -30,6 +30,10 @@
 
 #include "tmlqcd_config.h"
 
+#ifdef TM_USE_QUDA
+#include "quda.h"
+#endif
+
 #ifdef TM_USE_MPI
 #include <mpi.h>
 #endif
@@ -80,8 +84,7 @@ int tmLQCD_read_gauge(const int nconfig);
 
 // invert with source and propagator provided in TXYZ spin colour complex lexicographic order
 // propagator has kappa normalisation
-int tmLQCD_invert(double *const propagator, double *const source, const int op_id,
-                  const int write_prop);
+int tmLQCD_invert(double *const propagator, double *const source, const int op_id );
 
 // invert on odd part of lattice with prepared source
 int tmLQCD_invert_eo(double *const Odd_out, double *const Odd_in, const int op_id);
@@ -137,6 +140,8 @@ int invert_quda_direct(double *const propgator, double const *const source, cons
 /* interface smearing functions */
 void _performAPEnStep ( unsigned int nSteps, double alpha);
 void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha );
+
+void _performGFlownStep ( double * const h_out, double * const h_in, unsigned int n_steps, double step_size, int meas_interval, QudaWFlowType wflow_type , int const init );
 
 #endif
 
