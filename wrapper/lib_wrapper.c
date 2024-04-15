@@ -271,8 +271,9 @@ int tmLQCD_read_gauge(const int nconfig) {
   return (0);
 }
 
-int tmLQCD_invert(double* const propagator, double* const source, const int op_id,
-                  const int write_prop) {
+int tmLQCD_invert(double* const propagator, double* const source, const int op_id ) {
+ 
+  const int write_prop = 0;
   unsigned int index_start = 0;
   g_mu = 0.;
 
