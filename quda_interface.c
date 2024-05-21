@@ -2153,32 +2153,67 @@ void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigne
 
 /**********************************************************************/
 /**********************************************************************/
-
-
+#if 0
 /**********************************************************************
- *
+ * wrapper for gradient flow on gauge and fermion field
  **********************************************************************/
-void _performGFlownStep ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const init ) {
-
+void _performGFlownStep ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_p, int const update_gauge )
+{
   if ( h_out != h_in ) {
     memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
   }
   /* reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
   reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0);
-
+  
   memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
-
-  performGFlownStep( (void *)h_out, (void*)tempSpinor, &inv_param, smear_param, init );
-
+  
+  /* performGFlownStep( (void *)h_out, (void*)tempSpinor, &inv_param, n_steps, step_size, meas_interval, wflow_type, init ); */
+  
+  performGFlownStep ( (void *)h_out, (void *)tempSpinor, &inv_param, smear_p, update_gauge );
+  
   /* reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
   reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
-
+ 
 #if 0
   /* reorder the flowed gauge field to cvc layout */
   reorder_gauge_fromQuda ( gauge_flowed, gauge_quda );
 #endif
 
 }  /* end of _performGFlownStep */
+
+#endif  // of if 0
+
+/**********************************************************************/
+/**********************************************************************/
+
+#if 0
+/**********************************************************************
+ * wrapper for adjoint gradient flow on gauge and fermion field
+ **********************************************************************/
+void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_p, int const mb, int const nb, int const store )
+{
+  if ( h_in != NULL && h_out != NULL )
+  {
+    if ( h_out != h_in )
+    {
+      memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
+    }
+    /* reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
+    reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0);
+
+    memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
+  }
+
+  performGFlowAdjoint ( (void *)h_out, (void *)tempSpinor, &inv_param, smear_p, mb, nb, store );
+
+  if ( h_out != NULL )
+  {
+    /* reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
+    reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
+  }
+
+}  /* end of _performGFlowAdjoint */
+#endif  // of if 0
 
 /**********************************************************************/
 /**********************************************************************/

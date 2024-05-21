@@ -174,4 +174,10 @@ int invert_eo_quda_twoflavour_mshift(spinor ** const out_up, spinor ** const out
 void compute_gauge_derivative_quda(monomial * const mnl, hamiltonian_field_t * const hf);
 void compute_WFlow_quda(const double eps ,const double tmax, const int traj, FILE* outfile);
 
+#if 0
+void _performGFlownStep ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const update_gauge );
+
+void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const mb, int const nb, int const store );
+#endif  // of if 0
+
 #endif /* QUDA_INTERFACE_H_ */
