@@ -38,6 +38,8 @@
 #include "quda.h"
 #endif
 
+#include "misc_types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -143,7 +145,13 @@ int invert_quda_direct(double *const propgator, double const *const source, cons
   /* void _performAPEnStep ( unsigned int nSteps, double alpha); */
   void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha );
 
-  void _performGFlownStep ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const init );
+#if 0
+  void _performGFlownStep ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const update_gauge );
+
+  void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const mb, int const nb, int const store );
+#endif  // of if 0
+
+  void _loadGaugeQuda( const CompressionType compression );
 
 #endif
 
