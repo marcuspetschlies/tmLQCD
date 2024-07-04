@@ -38,6 +38,9 @@
 #include <mpi.h>
 #endif
 
+#include "misc_types.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -138,10 +141,16 @@ int tmLQCD_get_op_params(tmLQCD_op_params *params, const int op_id);
 int invert_quda_direct(double *const propgator, double const *const source, const int op_id);
 
 /* interface smearing functions */
-void _performAPEnStep ( unsigned int nSteps, double alpha);
-void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha );
+/* void _performAPEnStep ( unsigned int nSteps, double alpha); */
+/* void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha ); */
 
-void _performGFlownStep ( double * const h_out, double * const h_in, unsigned int n_steps, double step_size, int meas_interval, QudaWFlowType wflow_type , int const init );
+/* interface for gradient flow functions */
+/* void _performGFlownStep ( double * const h_out, double * const h_in, QudaInvertParam *inv_param, QudaGaugeSmearParam *smear_param, int const update_gauge ); */
+void _performGFlownStep ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const update_gauge );
+
+void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const mb, int const nb, int const store );
+
+void _loadGaugeQuda( const CompressionType compression );
 
 #endif
 
