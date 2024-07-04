@@ -181,7 +181,12 @@ void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigne
 
 
 /* interface for gradient flow functions */
-void _performGFlownStep ( double * const h_out, double * const h_in, unsigned int n_steps, double step_size, int meas_interval, QudaWFlowType wflow_type, int const init );
+/* void _performGFlownStep ( double * const h_out, double * const h_in, unsigned int n_steps, double step_size, int meas_interval, QudaWFlowType wflow_type, int const init ); */
+/* void _performGFlownStep ( double * const h_out, double * const h_in, QudaInvertParam *inv_param, QudaGaugeSmearParam *smear_param, int const update_gauge ); */
+void _performGFlownStep ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const update_gauge );
+
+void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const mb, int const nb, int const store );
+
 
 
 #endif
