@@ -2460,7 +2460,7 @@ void compute_gauge_derivative_quda(monomial * const mnl, hamiltonian_field_t * c
 
 /**********************************************************************/
 /**********************************************************************/
-
+#if 0
 /**********************************************************************
  * simplest version, assuming global gauge field has already been set
  *
@@ -2525,7 +2525,7 @@ void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigne
   reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
  
 }  /* end of _performWuppertalnStep */
-
+#endif
 /**********************************************************************/
 /**********************************************************************/
 
@@ -2588,9 +2588,11 @@ void reorder_gauge_fromQuda( double * const gout, double ** const gin )
 
 
 /**********************************************************************
- *
+ * wrapper for forward gradient flow
  **********************************************************************/
-void _performGFlownStep ( double * const h_out, double * const h_in, unsigned int n_steps, double step_size, int meas_interval, QudaWFlowType wflow_type, int const init ) {
+/* void _performGFlownStep ( double * const h_out, double * const h_in, QudaInvertParam *inv_p, QudaGaugeSmearParam *smear_p, int const update_gauge )  */
+void _performGFlownStep ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_p, int const update_gauge ) 
+{
 
   if ( h_out != h_in ) {
     memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
@@ -2600,7 +2602,9 @@ void _performGFlownStep ( double * const h_out, double * const h_in, unsigned in
 
   memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
 
-  performGFlownStep( (void *)h_out, (void*)tempSpinor, &inv_param, n_steps, step_size, meas_interval, wflow_type, init );
+  /* performGFlownStep( (void *)h_out, (void*)tempSpinor, &inv_param, n_steps, step_size, meas_interval, wflow_type, init ); */
+  
+  performGFlownStep ( (void *)h_out, (void *)tempSpinor, &inv_param, smear_p, update_gauge );
 
   /* reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
   reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
@@ -2612,5 +2616,36 @@ void _performGFlownStep ( double * const h_out, double * const h_in, unsigned in
 
 }  /* end of _performGFlownStep */
 
+
+/**********************************************************************/
+/**********************************************************************/
+
+
+/**********************************************************************
+ * wrapper for adjoint gradient flow
+ **********************************************************************/
+void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_p, int const mb, int const nb, int const store )
+{
+  if ( h_in != NULL && h_out != NULL )
+  {
+    if ( h_out != h_in ) 
+    {
+      memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
+    }
+    /* reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
+    reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0);
+
+    memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
+  }
+
+  performGFlowAdjoint ( (void *)h_out, (void *)tempSpinor, &inv_param, smear_p, mb, nb, store );
+
+  if ( h_out != NULL )
+  {
+    /* reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0, NULL ); */
+    reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
+  }
+
+}  /* end of _performGFlowAdjoint */
 
 #endif
