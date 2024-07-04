@@ -139,6 +139,13 @@ int tmLQCD_get_op_params(tmLQCD_op_params *params, const int op_id);
 // source and propagator  Should be full VOLUME spinor fields 
 // op_id                  Index of the operator to be inverted (0 to N-1)
 int invert_quda_direct(double *const propgator, double const *const source, const int op_id);
+
+void _performAPEnStep ( unsigned int nSteps, double alpha);
+
+void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha );
+
+void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaInvertParam *inv_param, QudaGaugeSmearParam *smear_param, int const mb, int const nb, int const store );
+
 #endif
 
 #ifdef TM_USE_QPHIX
