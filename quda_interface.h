@@ -188,4 +188,10 @@ void eigsolveQuda(_Complex double * evals, int n_evals, double tol, int blksize,
                   const int even_odd_flag, const SloppyPrecision refinement_precision,
                   SloppyPrecision sloppy_precision, CompressionType compression, const int oneFlavourFlag);
 
+void _performAPEnStep ( unsigned int nSteps, double alpha);
+
+void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha );
+
+void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const mb, int const nb, int const store );
+
 #endif /* QUDA_INTERFACE_H_ */

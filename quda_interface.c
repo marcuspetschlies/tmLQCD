@@ -2922,3 +2922,98 @@ void eigsolveQuda(_Complex double * evals, int n_evals, double tol, int blksize,
 
   tm_stopwatch_pop(&g_timers, 0, 1, "TM_QUDA");
 }
+
+/**********************************************************************/
+/**********************************************************************/
+
+/**********************************************************************
+ * simplest version, assuming global gauge field has already been set
+ *
+ * CAN THIS INTERFERE WITH LOADED INVERTER GAUGE FIELD ?
+ * DON'T WANT TO REBUILD CLOVER; MG SETUP after each smearing
+ * ( also Wuppertal smearing below )
+ *
+ * HOW MUCH MORE MEMORY DOES IT NEED ?
+ **********************************************************************/
+void _performAPEnStep ( unsigned int nSteps, double alpha)
+{
+  _initQuda();
+  _loadGaugeQuda(NO_COMPRESSION);
+
+  /* fill smear_param struct */
+  QudaGaugeSmearParam smear_param = newQudaGaugeSmearParam();
+  smear_param.smear_type = QUDA_GAUGE_SMEAR_APE;
+  smear_param.n_steps = nSteps;
+  smear_param.alpha = alpha;
+  smear_param.meas_interval = nSteps + 1;
+
+  /* fill obs_param struct */
+  QudaGaugeObservableParam obs_param = newQudaGaugeObservableParam();
+  obs_param.compute_plaquette = QUDA_BOOLEAN_TRUE;
+  obs_param.compute_qcharge   = QUDA_BOOLEAN_FALSE;
+  obs_param.su_project        = QUDA_BOOLEAN_FALSE;
+
+  performGaugeSmearQuda ( &smear_param, &obs_param );
+
+  return;
+
+}  /* end of _performAPEnStep */
+
+/**********************************************************************/
+/**********************************************************************/
+
+/**********************************************************************
+ * again simplest version, assumes gauge fields are in place 
+ *   in partulcar gaugeSmeared, if that is to be used;
+ *   should be preceeded by call to _performAPEnStep so that
+ *   quda interface creates gaugeSmeared
+ *
+ * CHECK AGAIN FOR INTERFERENCE
+ *
+ * in place should be allowed
+ **********************************************************************/
+void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha )
+{
+
+  if ( h_out != h_in ) {
+    memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
+  }
+  reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0 );
+
+  memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
+
+  performWuppertalnStep( (void *)h_out, (void*)tempSpinor, &inv_param, nSteps, alpha );
+
+  reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
+}  /* end of _performWuppertalnStep */
+
+/**********************************************************************/
+/**********************************************************************/
+
+/**********************************************************************
+ * wrapper for GFlowAdjoint
+ **********************************************************************/
+void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const mb, int const nb, int const store )
+{
+  if ( h_out != NULL && h_in != NULL )
+  {
+    if ( h_out != h_in ) 
+    {
+      memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
+    }
+    reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0 );
+
+    memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
+  }
+
+  performGFlowAdjoint ( (void *)h_out, (void *)h_in, &inv_param, smear_param, mb, nb, store );
+
+  if ( h_out != NULL && h_in != NULL )
+  {
+    reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
+  }
+}  /* end of _performGFlowAdjoint */
+
+
+
+
