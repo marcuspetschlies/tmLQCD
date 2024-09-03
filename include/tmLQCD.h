@@ -144,7 +144,9 @@ void _performAPEnStep ( unsigned int nSteps, double alpha);
 
 void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigned int nSteps, double alpha );
 
-void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaInvertParam *inv_param, QudaGaugeSmearParam *smear_param, int const mb, int const nb, int const store );
+void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const mb, int const nb, int const store );
+
+void _performGFlowForward ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const update_gauge );
 
 #endif
 
