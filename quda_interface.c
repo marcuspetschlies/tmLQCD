@@ -3006,7 +3006,7 @@ void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGauge
     memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
   }
 
-  performGFlowAdjoint ( (void *)h_out, (void *)h_in, &inv_param, smear_param, mb, nb, store );
+  performGFlowAdjoint ( (void *)h_out, (void *)tempSpinor, &inv_param, smear_param, mb, nb, store );
 
   if ( h_out != NULL && h_in != NULL )
   {
@@ -3014,6 +3014,32 @@ void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGauge
   }
 }  /* end of _performGFlowAdjoint */
 
+/**********************************************************************/
+/**********************************************************************/
+
+/**********************************************************************
+ * wrapper for GFlowForward
+ **********************************************************************/
+void _performGFlowForward ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const update_gauge )
+{
+  if ( h_out != NULL && h_in != NULL )
+  {
+    if ( h_out != h_in )
+    {
+      memcpy ( h_out, h_in, VOLUME*24*sizeof(double) );
+    }
+    reorder_spinor_toQuda ( h_out, inv_param.cpu_prec, 0 );
+
+    memcpy ( tempSpinor, h_out, VOLUME*24*sizeof(double) );
+  }
+
+  performGFlowForward ( (void *)h_out, (void *)h_in, &inv_param, smear_param, update_gauge );
+
+  if ( h_out != NULL && h_in != NULL )
+  {
+    reorder_spinor_fromQuda ( h_out, inv_param.cpu_prec, 0 );
+  }
+}  /* end of _performGFlowForward */
 
 
 

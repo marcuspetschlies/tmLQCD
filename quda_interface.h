@@ -194,4 +194,6 @@ void _performWuppertalnStep ( double * const h_out, double * const h_in, unsigne
 
 void _performGFlowAdjoint ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const mb, int const nb, int const store );
 
+void _performGFlowForward ( double * const h_out, double * const h_in, QudaGaugeSmearParam *smear_param, int const update_gauge );
+
 #endif /* QUDA_INTERFACE_H_ */
